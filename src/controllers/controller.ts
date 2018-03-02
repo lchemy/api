@@ -8,7 +8,7 @@ export abstract class Controller<A = any> {
 	private routes: Array<Route<A>> = [];
 
 	constructor() {
-		const metadataRoutes = Reflect.getOwnMetadata(ROUTES_METADATA_KEY, Object.getPrototypeOf(this)) as RouteConfiguration[] | undefined;
+		const metadataRoutes = Reflect.getMetadata(ROUTES_METADATA_KEY, Object.getPrototypeOf(this)) as RouteConfiguration[] | undefined;
 		if (metadataRoutes != null) {
 			this.addRoutes(metadataRoutes);
 		}
