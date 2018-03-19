@@ -2,13 +2,13 @@ import Boom from "boom";
 import "reflect-metadata";
 
 import { ROUTES_METADATA_KEY } from "../constants";
-import { ApiRequest, Route, RouteConfiguration } from "../models";
+import { ApiRequest, Route, RouteConfig } from "../models";
 
 export abstract class Controller<A = any> {
 	private routes: Array<Route<A>> = [];
 
 	constructor() {
-		const metadataRoutes = Reflect.getMetadata(ROUTES_METADATA_KEY, Object.getPrototypeOf(this)) as RouteConfiguration[] | undefined;
+		const metadataRoutes = Reflect.getMetadata(ROUTES_METADATA_KEY, Object.getPrototypeOf(this)) as RouteConfig[] | undefined;
 		if (metadataRoutes != null) {
 			this.addRoutes(metadataRoutes);
 		}
@@ -18,16 +18,16 @@ export abstract class Controller<A = any> {
 		return this.routes;
 	}
 
-	addRoute(config: RouteConfiguration<A>): void {
+	addRoute(config: RouteConfig<A>): void {
 		const route = this.expandConfig(config);
 		this.routes.push(route);
 	}
 
-	addRoutes(configs: Array<RouteConfiguration<A>>): void {
+	addRoutes(configs: Array<RouteConfig<A>>): void {
 		configs.forEach((config) => this.addRoute(config));
 	}
 
-	private expandConfig(config: RouteConfiguration<A>): Route<A> {
+	private expandConfig(config: RouteConfig<A>): Route<A> {
 		const handler = async (request: ApiRequest<A>) => {
 			if (config.auth !== "optional" && config.auth !== "none") {
 				const auth = request.auth;
@@ -50,7 +50,8 @@ export abstract class Controller<A = any> {
 			method: config.method,
 			path: config.path,
 			handler,
-			metadata: config.metadata
+			metadata: config.metadata,
+			auth: config.auth === "none" ? "none" : undefined
 		};
 	}
 }

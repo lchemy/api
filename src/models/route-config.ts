@@ -9,13 +9,17 @@ export interface RouteMetadata {
 	contentType?: string;
 }
 
-export interface Route<A = any> {
+export interface BaseRouteConfig<A = any> {
 	method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 	path: string;
 	handler: RouteHandler<A>;
 	metadata?: RouteMetadata;
 }
 
-export interface RouteConfiguration<A = any> extends Route<A> {
+export interface Route<A = any> extends BaseRouteConfig<A> {
+	auth?: "none";
+}
+
+export interface RouteConfig<A = any> extends BaseRouteConfig<A> {
 	auth?: RouteAuth<A> | "required" | "optional" | "none";
 }

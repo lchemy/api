@@ -1,3 +1,3 @@
 export * from "./api-request";
 export * from "./requests";
-export * from "./route-configuration";
+export * from "./route-config";
