@@ -8,7 +8,7 @@ import { ReadableService } from "../services";
 import { ModelController } from "./model-controller";
 
 export interface QueryFilterMap<O extends Orm, A = any> {
-	[key: string]: (orm: O, value?: string, auth?: A) => Filter | undefined;
+	[key: string]: (orm: O, value?: string | string[], auth?: A) => Filter | undefined;
 }
 
 export interface QueryKeysConfiguration {
@@ -104,9 +104,12 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			return;
 		}
 
-		const rawFields = query[this.queryKeys.fields];
+		let rawFields = query[this.queryKeys.fields];
 		if (rawFields == null || rawFields === "") {
 			return;
+		}
+		if (Array.isArray(rawFields)) {
+			rawFields = rawFields.join(",");
 		}
 
 		return this.service.parseApiFields(rawFields);
@@ -114,6 +117,9 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 
 	private async parseRequestFilter({ query, auth }: ApiRequest): Promise<Filter | undefined> {
 		const rawFilter = query != null ? query[this.queryKeys.filter] : undefined;
+		if (Array.isArray(rawFilter)) {
+			throw Boom.badRequest();
+		}
 
 		let filter: Filter | undefined;
 		if (rawFilter != null && rawFilter !== "") {
@@ -141,7 +147,10 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 
 	private async parseRequestSorts({ query }: ApiRequest): Promise<SortBy[] | undefined> {
-		const rawSorts = query != null ? query[this.queryKeys.sorts] : undefined;
+		let rawSorts = query != null ? query[this.queryKeys.sorts] : undefined;
+		if (Array.isArray(rawSorts)) {
+			rawSorts = rawSorts.join(",");
+		}
 
 		let sorts: SortBy[] | undefined;
 		if (rawSorts != null && rawSorts !== "") {
@@ -156,11 +165,18 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 
 	private parseRequestPagination({ query }: ApiRequest): Pagination {
-		let rawLimit: string | undefined,
-			rawOffset: string | undefined;
+		let rawLimit: string | string[] | undefined,
+			rawOffset: string | string[] | undefined;
 		if (query != null) {
 			rawLimit = query[this.queryKeys.limit];
+			if (Array.isArray(rawLimit)) {
+				throw Boom.badRequest();
+			}
+
 			rawOffset = query[this.queryKeys.offset];
+			if (Array.isArray(rawOffset)) {
+				throw Boom.badRequest();
+			}
 		}
 
 		const offset = rawOffset != null && !isNaN(rawOffset as any) ? Number(rawOffset) : 0;
