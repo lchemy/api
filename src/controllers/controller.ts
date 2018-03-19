@@ -29,7 +29,7 @@ export abstract class Controller<A = any> {
 
 	private expandConfig(config: RouteConfiguration<A>): Route<A> {
 		const handler = async (request: ApiRequest<A>) => {
-			if (config.auth !== "optional") {
+			if (config.auth !== "optional" && config.auth !== "none") {
 				const auth = request.auth;
 				if (auth == null) {
 					throw Boom.unauthorized();

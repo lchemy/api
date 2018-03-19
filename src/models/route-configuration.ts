@@ -17,5 +17,5 @@ export interface Route<A = any> {
 }
 
 export interface RouteConfiguration<A = any> extends Route<A> {
-	auth?: RouteAuth<A> | "required" | "optional";
+	auth?: RouteAuth<A> | "required" | "optional" | "none";
 }
