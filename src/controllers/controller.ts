@@ -3,6 +3,7 @@ import "reflect-metadata";
 
 import { ROUTES_METADATA_KEY } from "../constants";
 import { ApiRequest, Route, RouteConfig } from "../models";
+import { createHeadersProxy } from "../utilities";
 
 export abstract class Controller<A = any> {
 	private routes: Array<Route<A>> = [];
@@ -41,6 +42,10 @@ export abstract class Controller<A = any> {
 						throw Boom.forbidden();
 					}
 				}
+			}
+
+			if (request.headers != null) {
+				request.headers = createHeadersProxy(request.headers);
 			}
 
 			return config.handler.call(this, request);
