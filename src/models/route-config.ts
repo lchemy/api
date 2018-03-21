@@ -7,6 +7,7 @@ export type RouteAuth<A = any> = (auth?: A) => Promise<boolean> | boolean;
 export interface RouteMetadata {
 	description?: string;
 	contentType?: string;
+	authStrategies?: string[];
 }
 
 export interface BaseRouteConfig<A = any> {
