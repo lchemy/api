@@ -29,6 +29,9 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 
 	async insertManyRaw(builder: InsertManyRequestBuilder<object, A>, trx?: Transaction): Promise<object[]> {
 		const fields = (await this.insertableFields).toArray();
+		if (fields.length === 0) {
+			throw new Error(`Cannot insert row with no fields specified`);
+		}
 
 		return this.withTransaction(async (tx) => {
 			const persistedItems = await insertMany(this.ormRef, () => {
@@ -57,6 +60,9 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 
 	async insertOneRaw(builder: InsertOneRequestBuilder<object, A>, trx?: Transaction): Promise<object> {
 		const fields = (await this.insertableFields).toArray();
+		if (fields.length === 0) {
+			throw new Error(`Cannot insert row with no fields specified`);
+		}
 
 		return this.withTransaction(async (tx) => {
 			const persistedItem = await insertOne(this.ormRef, () => {
@@ -92,9 +98,11 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 			{ items, auth } = builder();
 
 		return this.withTransaction(async (tx) => {
-			await updateMany(this.ormRef, () => {
-				return { fields, items, auth };
-			}, tx);
+			if (fields.length > 0) {
+				await updateMany(this.ormRef, () => {
+					return { fields, items, auth };
+				}, tx);
+			}
 
 			return this.findAllRawByPrimaryFields(() => {
 				return { items, auth };
@@ -119,9 +127,11 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 			{ item, auth } = builder();
 
 		return this.withTransaction(async (tx) => {
-			await updateOne(this.ormRef, () => {
-				return { fields, item, auth };
-			}, tx);
+			if (fields.length > 0) {
+				await updateOne(this.ormRef, () => {
+					return { fields, item, auth };
+				}, tx);
+			}
 
 			const results = await this.findAllRawByPrimaryFields(() => {
 				return {
