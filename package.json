@@ -25,7 +25,7 @@
     "@lchemy/model": "^1.0.0-beta.0",
     "@lchemy/orm": "^1.0.0-beta.3",
     "@types/boom": "^7.2.0",
-    "@types/knex": "0.14.14",
+    "@types/knex": "0.14.7",
     "boom": "^7.2.0",
     "immutable": "^4.0.0-rc.9",
     "knex": "^0.14.6",
