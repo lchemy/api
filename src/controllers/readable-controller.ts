@@ -99,7 +99,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 
 	protected abstract findOneParamsToModel(params: { [key: string]: string | undefined }): M;
 
-	private async parseRequestFields({ query }: ApiRequest): Promise<ApiField[] | undefined> {
+	protected async parseRequestFields({ query }: ApiRequest): Promise<ApiField[] | undefined> {
 		if (query == null) {
 			return;
 		}
@@ -115,7 +115,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		return this.service.parseApiFields(rawFields);
 	}
 
-	private async parseRequestFilter({ query, auth }: ApiRequest): Promise<Filter | undefined> {
+	protected async parseRequestFilter({ query, auth }: ApiRequest): Promise<Filter | undefined> {
 		const rawFilter = query != null ? query[this.queryKeys.filter] : undefined;
 		if (Array.isArray(rawFilter)) {
 			throw Boom.badRequest();
@@ -146,7 +146,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		return filter;
 	}
 
-	private async parseRequestSorts({ query }: ApiRequest): Promise<SortBy[] | undefined> {
+	protected async parseRequestSorts({ query }: ApiRequest): Promise<SortBy[] | undefined> {
 		let rawSorts = query != null ? query[this.queryKeys.sorts] : undefined;
 		if (Array.isArray(rawSorts)) {
 			rawSorts = rawSorts.join(",");
@@ -164,7 +164,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		}
 	}
 
-	private parseRequestPagination({ query }: ApiRequest): Pagination {
+	protected parseRequestPagination({ query }: ApiRequest): Pagination {
 		let rawLimit: string | string[] | undefined,
 			rawOffset: string | string[] | undefined;
 		if (query != null) {
