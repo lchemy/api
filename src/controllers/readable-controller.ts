@@ -157,11 +157,11 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			sorts = await this.service.parseApiSorts(rawSorts);
 		}
 
-		if (sorts != null && sorts.length > 0) {
-			return sorts;
-		} else if (this.config.defaultSortBy != null) {
+		if ((sorts == null || sorts.length === 0) && this.config.defaultSortBy != null) {
 			sorts = await this.service.evaluateOrmBuilder((orm) => this.config.defaultSortBy!(orm));
 		}
+
+		return sorts;
 	}
 
 	protected parseRequestPagination({ query }: ApiRequest): Pagination {
