@@ -11,7 +11,9 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 		super(service);
 	}
 
-	async insert({ body, auth }: ApiRequest<A> = {}): Promise<{ data: object }> {
+	async insert({ body, params, auth }: ApiRequest<A> = {}): Promise<{ data: object }> {
+		await this.assertValidInsertParams(params != null ? params : {});
+
 		const item = this.bodyToModel(body);
 
 		const model = await this.service.insert(() => {
@@ -27,6 +29,8 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 		if (params == null) {
 			throw Boom.badRequest();
 		}
+
+		await this.assertValidUpdateParams(params);
 
 		const item = this.bodyToModel(body),
 			paramItem = this.updateParamsToModel(params);
@@ -49,6 +53,8 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 		if (params == null) {
 			throw Boom.badRequest();
 		}
+
+		await this.assertValidRemoveParams(params);
 
 		const item = this.removeParamsToModel(params);
 
@@ -80,4 +86,16 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 	}
 
 	protected abstract checkParamsMatchesBody(bodyModel: M, paramModel: M): boolean;
+
+	protected assertValidInsertParams(params: { [key: string]: string | undefined }): Promise<void> {
+		return this.assertValidFindParams(params);
+	}
+
+	protected assertValidUpdateParams(params: { [key: string]: string | undefined }): Promise<void> {
+		return this.assertValidFindOneParams(params);
+	}
+
+	protected assertValidRemoveParams(params: { [key: string]: string | undefined }): Promise<void> {
+		return this.assertValidUpdateParams(params);
+	}
 }

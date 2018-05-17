@@ -68,6 +68,8 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			pagination = await this.parseRequestPagination(request),
 			auth = request.auth;
 
+		await this.assertValidFindParams(request.params != null ? request.params : {});
+
 		const { rows, count } = await this.service.findWithCount(() => {
 			return { fields, sortBy, filter, pagination, auth };
 		});
@@ -84,6 +86,8 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			fields = await this.parseRequestFields(request),
 			auth = request.auth;
 
+		await this.assertValidFindParams(params);
+
 		const model = await this.service.findByPrimaryFields(() => {
 			return { fields, item, auth };
 		});
@@ -97,7 +101,15 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		};
 	}
 
-	protected abstract findOneParamsToModel(params: { [key: string]: string | undefined }): M;
+	protected abstract findOneParamsToModel(params?: { [key: string]: string | undefined }): M;
+
+	protected async assertValidFindParams(_params: { [key: string]: string | undefined }): Promise<void> {
+		return;
+	}
+
+	protected assertValidFindOneParams(params: { [key: string]: string | undefined }): Promise<void> {
+		return this.assertValidFindParams(params);
+	}
 
 	protected async parseRequestFields({ query }: ApiRequest): Promise<ApiField[] | undefined> {
 		if (query == null) {
