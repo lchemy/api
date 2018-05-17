@@ -62,15 +62,27 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 
 	async find(request: ApiRequest<A> = {}): Promise<{ data: object[], totalCount: number }> {
-		const fields = await this.parseRequestFields(request),
-			filter = await this.parseRequestFilter(request),
+		const params = request.params != null ? request.params : {},
+			rawFilter = await this.parseRequestFilter(request),
+			fields = await this.parseRequestFields(request),
 			sortBy = await this.parseRequestSorts(request),
 			pagination = await this.parseRequestPagination(request),
 			auth = request.auth;
 
-		await this.assertValidFindParams(request.params != null ? request.params : {});
+		await this.assertValidFindParams(params);
 
-		const { rows, count } = await this.service.findWithCount(() => {
+		const { rows, count } = await this.service.findWithCount((orm) => {
+			const paramsFilter = this.getFindParamsFilter(orm, params);
+
+			let filter: Filter | undefined;
+			if (rawFilter != null && paramsFilter != null) {
+				filter = rawFilter.and(paramsFilter);
+			} else if (rawFilter == null) {
+				filter = paramsFilter;
+			} else {
+				filter = rawFilter;
+			}
+
 			return { fields, sortBy, filter, pagination, auth };
 		});
 
@@ -88,8 +100,9 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 
 		await this.assertValidFindParams(params);
 
-		const model = await this.service.findByPrimaryFields(() => {
-			return { fields, item, auth };
+		const model = await this.service.findByPrimaryFields((orm) => {
+			const filter = this.getFindOneParamsFilter(orm, params);
+			return { fields, filter, item, auth };
 		});
 
 		if (model == null) {
@@ -102,6 +115,14 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 
 	protected abstract findOneParamsToModel(params?: { [key: string]: string | undefined }): M;
+
+	protected getFindParamsFilter(_orm: O, _params?: { [key: string]: string | undefined }): Filter | undefined {
+		return;
+	}
+
+	protected getFindOneParamsFilter(orm: O, params?: { [key: string]: string | undefined }): Filter | undefined {
+		return this.getFindParamsFilter(orm, params);
+	}
 
 	protected async assertValidFindParams(_params: { [key: string]: string | undefined }): Promise<void> {
 		return;

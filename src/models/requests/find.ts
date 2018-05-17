@@ -1,4 +1,4 @@
-import { Orm } from "@lchemy/orm";
+import { Filter, Orm } from "@lchemy/orm";
 import { FindRequestField } from "@lchemy/orm/models";
 
 export {
@@ -16,6 +16,7 @@ export interface FindAllByPrimaryFieldsRequest<T, A = any> {
 
 export interface FindOneByPrimaryFieldsRequest<T, A = any> {
 	fields?: FindRequestField[];
+	filter?: Filter;
 	item: T;
 	auth?: A;
 }

@@ -76,8 +76,9 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		const primaryFields = await this.primaryFields;
 
 		return findOne(this.ormRef, (orm) => {
-			const { fields, item, auth } = builder(orm),
-				filter = createFilterFromFieldValues(primaryFields, [item]);
+			const { fields, item, filter: builderFilter, auth } = builder(orm),
+				primaryFieldFilter = createFilterFromFieldValues(primaryFields, [item]),
+				filter = builderFilter != null ? primaryFieldFilter.and(builderFilter) : primaryFieldFilter;
 			return { fields, filter, auth };
 		}, trx);
 	}
