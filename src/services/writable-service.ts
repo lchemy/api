@@ -10,7 +10,7 @@ import { validationResultToBoom } from "../utilities";
 import { ReadableService } from "./readable-service";
 
 export type ValidationFunctionResult<M> = ValidationResult<M> | undefined;
-export type ValidationFunction<M, A> = (model: M, auth?: A, trx?: Transaction) => ValidationFunctionResult<M> | Promise<ValidationFunctionResult<M>>;
+export type ValidationFunction<M, A> = (model: M, auth: A | undefined, trx: Transaction) => ValidationFunctionResult<M> | Promise<ValidationFunctionResult<M>>;
 
 export abstract class WritableService<M, O extends Orm, A = any> extends ReadableService<M, O, A> {
 	protected validator?: Validator<M>;
@@ -148,45 +148,45 @@ export abstract class WritableService<M, O extends Orm, A = any> extends Readabl
 		}
 	}
 
-	protected async beforeInsert(_item: M, _auth?: A, _trx?: Transaction): Promise<void> {
+	protected async beforeInsert(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
 		return;
 	}
 
-	protected onInsert(item: M, auth?: A, trx?: Transaction): Promise<M> {
+	protected onInsert(item: M, auth: A | undefined, trx: Transaction): Promise<M> {
 		return this.dao.insertOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterInsert(_insertedItem: M, _targetItem: M, _auth?: A, _trx?: Transaction): Promise<M | undefined | void> {
+	protected async afterInsert(_insertedItem: M, _targetItem: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected async beforeUpdate(_item: M, _auth?: A, _trx?: Transaction): Promise<void> {
+	protected async beforeUpdate(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
 		return;
 	}
 
-	protected onUpdate(item: M, auth?: A, trx?: Transaction): Promise<M> {
+	protected onUpdate(item: M, auth: A | undefined, trx: Transaction): Promise<M> {
 		return this.dao.updateOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterUpdate(_updatedItem: M, _targetItem: M, _auth?: A, _trx?: Transaction): Promise<M | undefined | void> {
+	protected async afterUpdate(_updatedItem: M, _targetItem: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected async beforeRemove(_item: M, _auth?: A, _trx?: Transaction): Promise<void> {
+	protected async beforeRemove(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
 		return;
 	}
 
-	protected onRemove(item: M, auth?: A, trx?: Transaction): Promise<boolean> {
+	protected onRemove(item: M, auth: A | undefined, trx: Transaction): Promise<boolean> {
 		return this.dao.removeOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterRemove(_success: boolean, _removedItem: M, _auth?: A, _trx?: Transaction): Promise<boolean | undefined | void> {
+	protected async afterRemove(_success: boolean, _removedItem: M, _auth: A | undefined, _trx: Transaction): Promise<boolean | undefined | void> {
 		return;
 	}
 }
