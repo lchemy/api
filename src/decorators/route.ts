@@ -6,7 +6,7 @@ import { RouteConfig, RouteHandler, RouteMetadata } from "../models";
 
 export type RouteMethodDecorator<A> = (target: Controller, propertyKey: string, descriptor: TypedPropertyDescriptor<RouteHandler<A>>) => void;
 
-export function route<A = any>(method: RouteConfig["method"], path: string, auth?: RouteConfig["auth"], metadata?: RouteMetadata): RouteMethodDecorator<A> {
+export function route<A = any>(method: RouteConfig["method"], path: string, auth?: RouteConfig<A>["auth"], metadata?: RouteMetadata): RouteMethodDecorator<A> {
 	return (target, propertyKey) => {
 		const handler = (target as any)[propertyKey] as RouteHandler<A>,
 			config = { method, path, handler, auth, metadata } as RouteConfig;
