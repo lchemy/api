@@ -28,6 +28,6 @@ export abstract class ReadableService<M, O extends Orm, A = any> extends ModelSe
 	}
 
 	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
-		return this.dao.findExistsWithFilter(builder, trx);
+		return this.dao.findExistsByPrimaryFields(builder, trx);
 	}
 }
