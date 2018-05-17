@@ -2,7 +2,7 @@ import { Orm } from "@lchemy/orm";
 import { Transaction } from "knex";
 
 import { ReadableDao } from "../daos";
-import { FindAllRequestBuilder, FindAllWithCountRequestBuilder, FindOneByPrimaryFieldsRequestBuilder } from "../models";
+import { FindAllRequestBuilder, FindAllWithCountRequestBuilder, FindCountRequestBuilder, FindExistsByPrimaryFieldsRequestBuilder, FindOneByPrimaryFieldsRequestBuilder } from "../models";
 
 import { ModelService } from "./model-service";
 
@@ -21,5 +21,13 @@ export abstract class ReadableService<M, O extends Orm, A = any> extends ModelSe
 
 	findByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Transaction): Promise<M | undefined> {
 		return this.dao.findOneByPrimaryFields(builder, trx);
+	}
+
+	findExistsWithFilter(builder: FindCountRequestBuilder<O, A>, trx?: Transaction): Promise<boolean> {
+		return this.dao.findExistsWithFilter(builder, trx);
+	}
+
+	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
+		return this.dao.findExistsWithFilter(builder, trx);
 	}
 }
