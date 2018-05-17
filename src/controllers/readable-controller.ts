@@ -2,7 +2,7 @@ import { Filter, Orm, Pagination, SortBy } from "@lchemy/orm";
 import Boom from "boom";
 
 import { ApiField } from "../daos";
-import { ApiRequest } from "../models";
+import { ApiRequest, ApiRequestParams } from "../models";
 import { ReadableService } from "../services";
 
 import { ModelController } from "./model-controller";
@@ -10,6 +10,8 @@ import { ModelController } from "./model-controller";
 export interface QueryFilterMap<O extends Orm, A = any> {
 	[key: string]: (orm: O, value?: string | string[], auth?: A) => Filter | undefined;
 }
+
+export type ParamsFilter<O extends Orm, A = any> = (orm: O, params: ApiRequestParams, auth?: A) => Filter | undefined;
 
 export interface QueryKeysConfiguration {
 	fields: string;
@@ -33,6 +35,8 @@ export interface ReadableControllerConfiguration<O extends Orm, A = any> {
 	additionalFilterMap?: QueryFilterMap<O, A>;
 	defaultRequestLimit?: number;
 	maxRequestLimit?: number;
+	findParamsFilter?: ParamsFilter<O, A>;
+	findOneParamsFilter?: ParamsFilter<O, A>;
 }
 
 export abstract class ReadableController<M, O extends Orm, A = any> extends ModelController<M, O, A> {
@@ -57,6 +61,14 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		return this.config.maxRequestLimit != null ? this.config.maxRequestLimit : 500;
 	}
 
+	private get findParamsFilter(): ParamsFilter<O, A> {
+		return this.config.findParamsFilter != null ? this.config.findParamsFilter : () => undefined;
+	}
+
+	private get findOneParamsFilter(): ParamsFilter<O, A> {
+		return this.config.findOneParamsFilter != null ? this.config.findOneParamsFilter : this.findParamsFilter;
+	}
+
 	constructor(protected service: ReadableService<M, O, A>) {
 		super(service);
 	}
@@ -72,7 +84,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		await this.assertValidFindParams(params);
 
 		const { rows, count } = await this.service.findWithCount((orm) => {
-			const paramsFilter = this.getFindParamsFilter(orm, params);
+			const paramsFilter = this.findParamsFilter(orm, params, auth);
 
 			let filter: Filter | undefined;
 			if (rawFilter != null && paramsFilter != null) {
@@ -101,7 +113,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		await this.assertValidFindParams(params);
 
 		const model = await this.service.findByPrimaryFields((orm) => {
-			const filter = this.getFindOneParamsFilter(orm, params);
+			const filter = this.findOneParamsFilter(orm, params, auth);
 			return { fields, filter, item, auth };
 		});
 
@@ -115,14 +127,6 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 
 	protected abstract findOneParamsToModel(params?: { [key: string]: string | undefined }): M;
-
-	protected getFindParamsFilter(_orm: O, _params?: { [key: string]: string | undefined }): Filter | undefined {
-		return;
-	}
-
-	protected getFindOneParamsFilter(orm: O, params?: { [key: string]: string | undefined }): Filter | undefined {
-		return this.getFindParamsFilter(orm, params);
-	}
 
 	protected async assertValidFindParams(_params: { [key: string]: string | undefined }): Promise<void> {
 		return;
