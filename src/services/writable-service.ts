@@ -5,6 +5,7 @@ import { Transaction } from "knex";
 
 import { WritableDao } from "../daos";
 import { InsertOneRequestBuilder, RemoveOneRequestBuilder, UpdateOneRequestBuilder } from "../models";
+import { validationResultToBoom } from "../utilities";
 
 import { ReadableService } from "./readable-service";
 
@@ -142,14 +143,9 @@ export abstract class WritableService<M, O extends Orm, A = any> extends Readabl
 			throw Boom.badRequest("Failed validations", err);
 		}
 
-		if (result.isValid) {
-			return;
+		if (!result.isValid) {
+			throw validationResultToBoom(result);
 		}
-
-		// TODO: wrap this in a utility function
-		const err = Boom.badRequest();
-		(err.output.payload as any).errors = result.errors;
-		throw err;
 	}
 
 	protected async beforeInsert(_item: M, _auth?: A, _trx?: Transaction): Promise<void> {

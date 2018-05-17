@@ -4,3 +4,4 @@ export { createRecordsMap } from "./create-records-map";
 export * from "./get-in-path";
 export * from "./get-field-value";
 export * from "./set-field-value";
+export * from "./validation-result-to-boom";

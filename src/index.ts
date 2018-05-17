@@ -3,3 +3,4 @@ export * from "./daos";
 export * from "./decorators";
 export * from "./models";
 export * from "./services";
+export { validationResultToBoom } from "./utilities";
