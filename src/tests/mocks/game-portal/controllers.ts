@@ -50,7 +50,7 @@ export class CategoriesController extends ReadableController<Category, Categorie
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Category, paramModel: Category): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Category, paramModel: Category): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 
@@ -104,7 +104,7 @@ export class GamesController extends WritableController<Game, GamesOrm> {
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Game, paramModel: Game): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Game, paramModel: Game): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 
@@ -162,7 +162,7 @@ export class UsersController extends WritableController<User, UsersOrm> {
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: User, paramModel: User): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: User, paramModel: User): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 
@@ -216,7 +216,7 @@ export class ReviewsController extends WritableController<Review, ReviewsOrm> {
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Review, paramModel: Review): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Review, paramModel: Review): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 
@@ -260,7 +260,7 @@ export class GameRatingsController extends ReadableController<GameRating, GameRa
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: GameRating, paramModel: GameRating): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: GameRating, paramModel: GameRating): boolean {
 		return bodyModel.game.id === paramModel.game.id;
 	}
 

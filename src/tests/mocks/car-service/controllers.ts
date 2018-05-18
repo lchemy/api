@@ -70,7 +70,7 @@ export class DriversController extends WritableController<Driver, DriversOrm> {
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Driver, paramModel: Driver): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Driver, paramModel: Driver): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 }
@@ -112,7 +112,7 @@ export class PassengersController extends WritableController<Passenger, Passenge
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Passenger, paramModel: Passenger): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Passenger, paramModel: Passenger): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 }
@@ -154,7 +154,7 @@ export class RidesController extends WritableController<Ride, RidesOrm> {
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: Ride, paramModel: Ride): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: Ride, paramModel: Ride): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 }
@@ -196,7 +196,7 @@ export class DriverReviewsController extends WritableController<DriverReview, Dr
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: DriverReview, paramModel: DriverReview): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: DriverReview, paramModel: DriverReview): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 }
@@ -238,7 +238,7 @@ export class PassengerReviewsController extends WritableController<PassengerRevi
 		} as any;
 	}
 
-	protected checkParamsMatchesBody(bodyModel: PassengerReview, paramModel: PassengerReview): boolean {
+	protected checkUpdateParamsMatchesBody(bodyModel: PassengerReview, paramModel: PassengerReview): boolean {
 		return bodyModel.id === paramModel.id;
 	}
 }
