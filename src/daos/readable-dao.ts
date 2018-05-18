@@ -76,7 +76,7 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		const primaryFields = await this.primaryFields;
 
 		return findOne(this.ormRef, (orm) => {
-			const { fields, item, filter: builderFilter, auth } = builder(orm),
+			const { fields, filter: builderFilter, item, auth } = builder(orm),
 				primaryFieldFilter = createFilterFromFieldValues(primaryFields, [item]),
 				filter = builderFilter != null ? primaryFieldFilter.and(builderFilter) : primaryFieldFilter;
 			return { fields, filter, auth };
@@ -85,10 +85,11 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 
 	async findOneByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Transaction): Promise<M | undefined> {
 		const row = await this.findOneRawByPrimaryFields((orm) => {
-			const { item, fields, auth } = builder(orm);
+			const { fields, filter, item, auth } = builder(orm);
 			return {
-				item: this.modelToDbJson(item),
 				fields,
+				filter,
+				item: this.modelToDbJson(item),
 				auth
 			};
 		}, trx);
