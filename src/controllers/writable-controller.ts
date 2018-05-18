@@ -1,7 +1,7 @@
 import { Orm } from "@lchemy/orm";
 import Boom from "boom";
 
-import { ApiRequest } from "../models";
+import { ApiRequest, ApiRequestParams } from "../models";
 import { WritableService } from "../services";
 
 import { ReadableController } from "./readable-controller";
@@ -12,9 +12,8 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 	}
 
 	async insert({ body, params, auth }: ApiRequest<A> = {}): Promise<{ data: object }> {
-		await this.assertValidInsertParams(params != null ? params : {});
-
 		const item = this.bodyToModel(body);
+		await this.assertValidInsertParams(params != null ? params : {}, item);
 
 		const model = await this.service.insert(() => {
 			return { item, auth };
@@ -30,15 +29,8 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 			throw Boom.badRequest();
 		}
 
-		await this.assertValidUpdateParams(params);
-
-		const item = this.bodyToModel(body),
-			paramItem = this.updateParamsToModel(params);
-
-		const matches = this.checkParamsMatchesBody(item, paramItem);
-		if (!matches) {
-			throw Boom.badRequest("Request path does not match body payload");
-		}
+		const item = this.bodyToModel(body);
+		await this.assertValidUpdateParams(params, item);
 
 		const model = await this.service.update(() => {
 			return { item, auth };
@@ -54,9 +46,8 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 			throw Boom.badRequest();
 		}
 
-		await this.assertValidRemoveParams(params);
-
 		const item = this.removeParamsToModel(params);
+		await this.assertValidRemoveParams(params);
 
 		const success = await this.service.remove(() => {
 			return { item, auth };
@@ -77,25 +68,30 @@ export abstract class WritableController<M, O extends Orm, A = any> extends Read
 		}
 	}
 
-	protected updateParamsToModel(params: { [key: string]: string | undefined }): M {
+	protected updateParamsToModel(params: ApiRequestParams): M {
 		return this.findOneParamsToModel(params);
 	}
 
-	protected removeParamsToModel(params: { [key: string]: string | undefined }): M {
+	protected removeParamsToModel(params: ApiRequestParams): M {
 		return this.updateParamsToModel(params);
 	}
 
-	protected abstract checkParamsMatchesBody(bodyModel: M, paramModel: M): boolean;
-
-	protected assertValidInsertParams(params: { [key: string]: string | undefined }): Promise<void> {
+	protected assertValidInsertParams(params: ApiRequestParams, _bodyModel: M): Promise<void> {
 		return this.assertValidFindParams(params);
 	}
 
-	protected assertValidUpdateParams(params: { [key: string]: string | undefined }): Promise<void> {
+	protected abstract checkUpdateParamsMatchesBody(bodyModel: M, paramModel: M): boolean;
+	protected assertValidUpdateParams(params: ApiRequestParams, bodyModel: M): Promise<void> {
+		const paramModel = this.updateParamsToModel(params),
+			matches = this.checkUpdateParamsMatchesBody(bodyModel, paramModel);
+		if (!matches) {
+			throw Boom.badRequest("Request path does not match body payload");
+		}
+
 		return this.assertValidFindOneParams(params);
 	}
 
-	protected assertValidRemoveParams(params: { [key: string]: string | undefined }): Promise<void> {
-		return this.assertValidUpdateParams(params);
+	protected assertValidRemoveParams(params: ApiRequestParams): Promise<void> {
+		return this.assertValidFindOneParams(params);
 	}
 }

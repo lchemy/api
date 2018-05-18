@@ -128,11 +128,11 @@ export abstract class WritableService<M, O extends Orm, A = any> extends Readabl
 
 		try {
 			await fns.reduce(async (prev, fn) => {
+				await prev;
+
 				if (!result.isValid) {
 					return prev;
 				}
-
-				await prev;
 
 				const ownResult = await fn.call(this, model, auth, trx) as ValidationFunctionResult<M>;
 				if (ownResult != null && !ownResult.isValid) {

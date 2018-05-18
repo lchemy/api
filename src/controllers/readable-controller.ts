@@ -110,7 +110,7 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			fields = await this.parseRequestFields(request),
 			auth = request.auth;
 
-		await this.assertValidFindParams(params);
+		await this.assertValidFindOneParams(params);
 
 		const model = await this.service.findByPrimaryFields((orm) => {
 			const filter = this.findOneParamsFilter(orm, params, auth);
@@ -126,13 +126,13 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		};
 	}
 
-	protected abstract findOneParamsToModel(params?: { [key: string]: string | undefined }): M;
+	protected abstract findOneParamsToModel(params?: ApiRequestParams): M;
 
-	protected async assertValidFindParams(_params: { [key: string]: string | undefined }): Promise<void> {
+	protected async assertValidFindParams(_params: ApiRequestParams): Promise<void> {
 		return;
 	}
 
-	protected assertValidFindOneParams(params: { [key: string]: string | undefined }): Promise<void> {
+	protected assertValidFindOneParams(params: ApiRequestParams): Promise<void> {
 		return this.assertValidFindParams(params);
 	}
 
