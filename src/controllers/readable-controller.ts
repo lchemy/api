@@ -34,8 +34,8 @@ export interface ReadableControllerConfiguration<O extends Orm, A = any> {
 	queryKeys?: Partial<QueryKeysConfiguration>;
 	defaultSortBy?: (orm: O) => SortBy[];
 	additionalFilterMap?: QueryFilterMap<O, A>;
-	defaultRequestLimit?: number;
-	maxRequestLimit?: number;
+	defaultRequestLimit?: number | null;
+	maxRequestLimit?: number | null;
 	findParamsFilter?: ParamsFilter<O, A>;
 	findOneParamsFilter?: ParamsFilter<O, A>;
 }
@@ -54,12 +54,18 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 	}
 	private _queryKeys!: QueryKeysConfiguration;
 
-	private get defaultQueryLimit(): number {
-		return this.config.defaultRequestLimit != null ? this.config.defaultRequestLimit : 50;
+	private get defaultQueryLimit(): number | null {
+		if (this.config.defaultRequestLimit === undefined) {
+			return 50;
+		}
+		if (this.config.defaultRequestLimit === null) {
+			return this.maxQueryLimit;
+		}
+		return this.config.defaultRequestLimit;
 	}
 
-	private get maxQueryLimit(): number {
-		return this.config.maxRequestLimit != null ? this.config.maxRequestLimit : 500;
+	private get maxQueryLimit(): number | null {
+		return this.config.maxRequestLimit !== undefined ? this.config.maxRequestLimit : 500;
 	}
 
 	private get findParamsFilter(): ParamsFilter<O, A> {
@@ -241,10 +247,14 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		const offset = rawOffset != null && !isNaN(rawOffset as any) ? Number(rawOffset) : 0;
 
 		let limit = rawLimit != null && !isNaN(rawLimit as any) ? Number(rawLimit) : this.defaultQueryLimit;
-		if (limit < 0) {
-			limit = 0;
-		} else if (limit > this.maxQueryLimit) {
-			throw Boom.badRequest(`Cannot set limit above max query limit of ${ this.maxQueryLimit }`);
+		if (limit == null) {
+			limit = this.maxQueryLimit;
+		} else {
+			if (limit < 0) {
+				limit = 0;
+			} else if (this.maxQueryLimit != null && limit > this.maxQueryLimit) {
+				throw Boom.badRequest(`Cannot set limit above max query limit of ${ this.maxQueryLimit }`);
+			}
 		}
 
 		return { offset, limit };
