@@ -23,7 +23,7 @@
   "dependencies": {
     "@lchemy/api-filter-parser": "^1.0.0-beta.4",
     "@lchemy/model": "^1.0.0-beta.0",
-    "@lchemy/orm": "^1.0.0-beta.5",
+    "@lchemy/orm": "^1.0.0-beta.6",
     "@types/boom": "^7.2.0",
     "@types/knex": "^0.14.14",
     "boom": "^7.2.0",
