@@ -10,7 +10,8 @@ module.exports = () => {
 			"src/**/*.spec.ts"
 		],
 		filesWithNoCoverageCalculated: [
-			"src/tests/**/*.ts"
+			"src/tests/**/*.ts",
+			"dist/*.*"
 		],
 		env: {
 			type: "node",

@@ -8,9 +8,10 @@ export function createHeadersProxy<T extends ApiRequestHeaders>(headers: T): T {
 
 	return new Proxy(simplifiedHeaders, {
 		get: (target, key) => {
-			if (typeof key === "string") {
-				key = key.toLowerCase();
+			if (typeof key !== "string") {
+				key = String(key);
 			}
+			key = key.toLowerCase();
 			return target[key];
 		}
 	});

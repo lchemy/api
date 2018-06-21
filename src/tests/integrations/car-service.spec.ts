@@ -55,6 +55,30 @@ describe("car service integration", () => {
 				expect(actualDriver.history.length).toBe(expectedDriver.history.length);
 			});
 		});
+
+		it("should fail if fields param is invalid", async () => {
+			const driversController = container.get(DriversController);
+
+			const out = driversController.find({
+				query: {
+					fields: "invalidField"
+				}
+			});
+
+			await expect(out).rejects.toThrow();
+		});
+
+		it("should fail if filter param is invalid", async () => {
+			const driversController = container.get(DriversController);
+
+			const out = driversController.find({
+				query: {
+					filter: "id eq"
+				}
+			});
+
+			await expect(out).rejects.toThrow();
+		});
 	});
 
 	describe("passengers controller", () => {

@@ -149,7 +149,16 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			rawFields = rawFields.join(",");
 		}
 
-		return this.service.parseApiFields(rawFields);
+		try {
+			const fields = await this.service.parseApiFields(rawFields);
+			return fields;
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Boom.badRequest(`Invalid fields: ${ err.message }`);
+			} else {
+				throw Boom.badRequest("Invalid fields");
+			}
+		}
 	}
 
 	protected async parseRequestFilter({ query, auth }: ApiRequest): Promise<Filter | undefined> {
@@ -160,7 +169,11 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 
 		let filter: Filter | undefined;
 		if (rawFilter != null && rawFilter !== "") {
-			filter = await this.service.parseApiFilter(rawFilter);
+			try {
+				filter = await this.service.parseApiFilter(rawFilter);
+			} catch {
+				throw Boom.badRequest("Invalid filter");
+			}
 		}
 
 		const additionalFilterMap = this.config.additionalFilterMap;
