@@ -1,3 +1,4 @@
+import { ExpressionError, ParseError, ValueError } from "@lchemy/api-filter-parser";
 import { Filter, Orm, Pagination, SortBy } from "@lchemy/orm";
 import Boom from "boom";
 
@@ -153,11 +154,11 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 			const fields = await this.service.parseApiFields(rawFields);
 			return fields;
 		} catch (err) {
-			if (err instanceof Error) {
-				throw Boom.badRequest(`Invalid fields: ${ err.message }`);
-			} else {
-				throw Boom.badRequest("Invalid fields");
+			const boom = Boom.badRequest("Invalid fields query parameter");
+			if (err.message != null) {
+				(boom.output.payload as any).reason = err.message;
 			}
+			throw boom;
 		}
 	}
 
@@ -171,8 +172,16 @@ export abstract class ReadableController<M, O extends Orm, A = any> extends Mode
 		if (rawFilter != null && rawFilter !== "") {
 			try {
 				filter = await this.service.parseApiFilter(rawFilter);
-			} catch {
-				throw Boom.badRequest("Invalid filter");
+			} catch (err) {
+				const boom = Boom.badRequest("Invalid filter query parameter");
+				if (err instanceof ParseError) {
+					(boom.output.payload as any).reason = err.message;
+					(boom.output.payload as any).annotatedInput = err.annotatedInput;
+				}
+				if (err instanceof ExpressionError || err instanceof ValueError) {
+					(boom.output.payload as any).reason = err.message;
+				}
+				throw boom;
 			}
 		}
 
