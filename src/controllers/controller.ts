@@ -2,7 +2,7 @@ import Boom from "boom";
 import "reflect-metadata";
 
 import { ROUTES_METADATA_KEY } from "../constants";
-import { ApiRequest, Route, RouteConfig } from "../models";
+import { ApiRequest, ApiResponse, Route, RouteConfig } from "../models";
 import { createHeadersProxy } from "../utilities";
 
 export abstract class Controller<A = any> {
@@ -26,6 +26,10 @@ export abstract class Controller<A = any> {
 
 	addRoutes(configs: Array<RouteConfig<A>>): void {
 		configs.forEach((config) => this.addRoute(config));
+	}
+
+	protected respond<T>(value: T): ApiResponse<T> {
+		return new ApiResponse(value);
 	}
 
 	private expandConfig(config: RouteConfig<A>): Route<A> {
