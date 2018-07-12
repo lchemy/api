@@ -3,7 +3,7 @@ export class ApiResponse<T = any> {
 		return this._statusCode;
 	}
 
-	get contentType(): string {
+	get contentType(): string | undefined {
 		return this._contentType;
 	}
 
@@ -12,7 +12,7 @@ export class ApiResponse<T = any> {
 	}
 
 	private _statusCode: number = 200;
-	private _contentType: string = "application/json";
+	private _contentType?: string;
 	private _headers: Record<string, string> = {};
 
 	constructor(readonly value: T) {
