@@ -4,7 +4,7 @@ import { ModelService } from "../services";
 
 import { Controller } from "./controller";
 
-export abstract class ModelController<M, O extends Orm, A = any> extends Controller<A> {
+export abstract class ModelController<M extends object, O extends Orm, A = any> extends Controller<A> {
 	constructor(protected service: ModelService<M, O>) {
 		super();
 	}

@@ -40,7 +40,7 @@ export interface ReadableControllerConfiguration<O extends Orm, A = any> {
 	findOneParamsFilter?: ParamsFilter<O, A>;
 }
 
-export abstract class ReadableController<M, O extends Orm, A = any> extends ModelController<M, O, A> {
+export abstract class ReadableController<M extends object, O extends Orm, A = any> extends ModelController<M, O, A> {
 	protected config: ReadableControllerConfiguration<O, A> = {};
 
 	private get queryKeys(): QueryKeysConfiguration {

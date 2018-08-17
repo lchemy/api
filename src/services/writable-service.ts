@@ -12,7 +12,7 @@ import { ReadableService } from "./readable-service";
 export type ValidationFunctionResult<M> = ValidationResult<M> | undefined;
 export type ValidationFunction<M, A> = (model: M, auth: A | undefined, trx: Transaction) => ValidationFunctionResult<M> | Promise<ValidationFunctionResult<M>>;
 
-export abstract class WritableService<M, O extends Orm, A = any> extends ReadableService<M, O, A> {
+export abstract class WritableService<M extends object, O extends Orm, A = any> extends ReadableService<M, O, A> {
 	protected validator?: Validator<M>;
 	protected insertValidator?: Validator<M>;
 	protected updateValidator?: Validator<M>;

@@ -6,7 +6,7 @@ import { WritableService } from "../services";
 
 import { ReadableController } from "./readable-controller";
 
-export abstract class WritableController<M, O extends Orm, A = any> extends ReadableController<M, O, A> {
+export abstract class WritableController<M extends object, O extends Orm, A = any> extends ReadableController<M, O, A> {
 	constructor(protected service: WritableService<M, O, A>) {
 		super(service);
 	}

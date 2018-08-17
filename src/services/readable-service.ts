@@ -6,7 +6,7 @@ import { FindAllRequestBuilder, FindAllWithCountRequestBuilder, FindCountRequest
 
 import { ModelService } from "./model-service";
 
-export abstract class ReadableService<M, O extends Orm, A = any> extends ModelService<M, O> {
+export abstract class ReadableService<M extends object, O extends Orm, A = any> extends ModelService<M, O> {
 	constructor(protected dao: ReadableDao<M, O, A>) {
 		super(dao);
 	}

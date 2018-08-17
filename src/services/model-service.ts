@@ -3,7 +3,7 @@ import { Transaction } from "knex";
 
 import { ApiField, Dao } from "../daos";
 
-export abstract class ModelService<M, O extends Orm> {
+export abstract class ModelService<M extends object, O extends Orm> {
 	constructor(protected dao: Dao<M, O>) {
 
 	}
