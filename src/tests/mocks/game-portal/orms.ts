@@ -105,7 +105,7 @@ export interface UserInfosOrm extends RelationalOrm {
 	userId: ColumnField<number>;
 	age: ColumnField<number>;
 }
-export const $userInfosOrm: OrmRef<UserInfosOrm> = buildOrm($userInfosSchema).defineRelation("userInfo", ({ column, join, schema }) => {
+export const $userInfosOrm: OrmRef<UserInfosOrm> = buildOrm($userInfosSchema).defineRelation("userInfo", ({ column, schema }) => {
 	return {
 		userId: column(schema.userId).exclude(),
 		age: column(schema.age)

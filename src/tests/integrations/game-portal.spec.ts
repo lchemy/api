@@ -5,11 +5,11 @@ import {
 	Category,
 	Data,
 	Game,
-	GameRating,
-	GameRatingsController,
+	// GameRating,
+	// GameRatingsController,
 	GamesController,
-	Review,
-	ReviewsController,
+	// Review,
+	// ReviewsController,
 	User,
 	UsersController,
 	createTables,
@@ -378,9 +378,9 @@ describe("game portal integration", () => {
 	});
 
 	describe("reviews controller", () => {
-		let ctrl: ReviewsController;
+		// let ctrl: ReviewsController;
 		beforeEach(() => {
-			ctrl = container.get(ReviewsController);
+			// ctrl = container.get(ReviewsController);
 		});
 
 		it("should find all", async () => {
@@ -413,9 +413,9 @@ describe("game portal integration", () => {
 	});
 
 	describe("game ratings controller", () => {
-		let ctrl: GameRatingsController;
+		// let ctrl: GameRatingsController;
 		beforeEach(() => {
-			ctrl = container.get(GameRatingsController);
+			// ctrl = container.get(GameRatingsController);
 		});
 
 		it("should find all", async () => {

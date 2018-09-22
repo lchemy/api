@@ -9,7 +9,6 @@ import {
 	buildOrm
 } from "@lchemy/orm";
 
-import { AuthUser } from "./models";
 import { $driverMetricsSchema, $driverReviewsSchema, $driversSchema, $passengerMetricsSchema, $passengerReviewsSchema, $passengersSchema, $ridesSchema } from "./schemas";
 
 // TODO: add auth user to the orms
@@ -126,7 +125,7 @@ export interface DriverMetricsOrm extends AggregateOrm {
 	totalDistance: AggregateField;
 	totalEarnings: AggregateField;
 }
-export const $driverMetricsOrm: OrmRef<DriverMetricsOrm> = buildOrm($driverMetricsSchema).defineAggregation("driverMetrics", ({ aggregate, column, join, schema }) => {
+export const $driverMetricsOrm: OrmRef<DriverMetricsOrm> = buildOrm($driverMetricsSchema).defineAggregation("driverMetrics", ({ aggregate, column, schema }) => {
 	return {
 		driverId: column(schema.driverId),
 		averageRating: aggregate(schema.driverRating).average().asFloat().include(),
@@ -143,7 +142,7 @@ export interface PassengerMetricsOrm extends AggregateOrm {
 	totalDistance: AggregateField;
 	totalCosts: AggregateField;
 }
-export const $passengerMetricsOrm: OrmRef<PassengerMetricsOrm> = buildOrm($passengerMetricsSchema).defineAggregation("passengerMetrics", ({ aggregate, column, join, schema }) => {
+export const $passengerMetricsOrm: OrmRef<PassengerMetricsOrm> = buildOrm($passengerMetricsSchema).defineAggregation("passengerMetrics", ({ aggregate, column, schema }) => {
 	return {
 		passengerId: column(schema.passengerId),
 		averageRating: aggregate(schema.passengerRating).average().asFloat().include(),
