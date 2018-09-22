@@ -1,7 +1,7 @@
 {
   "name": "@lchemy/api",
   "description": "",
-  "version": "1.0.0-beta.25",
+  "version": "1.0.0-beta.26",
   "contributors": [
     "Jesse Zhang"
   ],
@@ -21,13 +21,13 @@
     "prepublishOnly": "echo 'Cannot publish the development files. Publish the built files instead.' && exit 1"
   },
   "dependencies": {
-    "@lchemy/api-filter-parser": "^1.0.0-beta.5",
-    "@lchemy/model": "^1.0.0-beta.3",
-    "@lchemy/orm": "^1.0.0-beta.7",
+    "@lchemy/api-filter-parser": "^1.0.0-beta.6",
+    "@lchemy/model": "^1.0.0-beta.6",
+    "@lchemy/orm": "^1.0.0-beta.10",
     "@types/boom": "^7.2.0",
     "@types/knex": "^0.14.18",
     "boom": "^7.2.0",
-    "immutable": "^4.0.0-rc.9",
+    "immutable": "4.0.0-rc.9",
     "knex": "^0.15.2",
     "reflect-metadata": "^0.1.12"
   },
