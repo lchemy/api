@@ -31,8 +31,9 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		return this.withTransaction(async (tx) => {
 			await this.assertValidInsert(item, auth, tx);
 
-			await this.beforeInsert(item, auth, tx);
-			const newItem = await this.onInsert(item, auth, tx),
+			const beforeInsert = await this.beforeInsert(item, auth, tx),
+				targetItem = beforeInsert != null ? beforeInsert : item,
+				newItem = await this.onInsert(targetItem, auth, tx),
 				afterInsert = await this.afterInsert(newItem, item, auth, tx);
 			return afterInsert != null ? afterInsert : newItem;
 		}, trx);
@@ -44,8 +45,9 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		return this.withTransaction(async (tx) => {
 			await this.assertValidUpdate(item, auth, tx);
 
-			await this.beforeUpdate(item, auth, tx);
-			const newItem = await this.onUpdate(item, auth, tx),
+			const beforeUpdate = await this.beforeUpdate(item, auth, tx),
+				targetItem = beforeUpdate != null ? beforeUpdate : item,
+				newItem = await this.onUpdate(targetItem, auth, tx),
 				afterUpdate = await this.afterUpdate(newItem, item, auth, tx);
 			return afterUpdate != null ? afterUpdate : newItem;
 		}, trx);
@@ -61,8 +63,9 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 				return { item, auth };
 			}, tx))!;
 
-			await this.beforeRemove(existingItem, auth, tx);
-			const success = await this.onRemove(existingItem, auth, tx),
+			const beforeRemove = await this.beforeRemove(existingItem, auth, tx),
+				targetItem = beforeRemove != null ? beforeRemove : existingItem,
+				success = await this.onRemove(targetItem, auth, tx),
 				afterRemove = await this.afterRemove(success, existingItem, auth, tx);
 			return afterRemove != null ? afterRemove : success;
 		}, trx);
@@ -148,7 +151,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		}
 	}
 
-	protected async beforeInsert(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
+	protected async beforeInsert(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined> {
 		return;
 	}
 
@@ -162,7 +165,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		return;
 	}
 
-	protected async beforeUpdate(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
+	protected async beforeUpdate(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined> {
 		return;
 	}
 
@@ -176,7 +179,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		return;
 	}
 
-	protected async beforeRemove(_item: M, _auth: A | undefined, _trx: Transaction): Promise<void> {
+	protected async beforeRemove(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined> {
 		return;
 	}
 
