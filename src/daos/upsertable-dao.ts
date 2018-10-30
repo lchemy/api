@@ -98,7 +98,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 
 			// update items
 			if (updateItems.length > 0) {
-				if (updateableFields.size > 0 && updateableFields !== uniqueFields) {
+				if (updateableFields.size > 0 && !updateableFields.equals(uniqueFields)) {
 					await this.updateManyRaw(() => {
 						return {
 							items: updateItems,

@@ -74,7 +74,7 @@ export abstract class ReplaceableDao<M, O extends Orm, A = any> extends Upsertab
 			}
 
 			// update items
-			if (updateItems.length > 0 && updateableFields.size > 0 && updateableFields !== uniqueFields) {
+			if (updateItems.length > 0 && updateableFields.size > 0 && !updateableFields.equals(uniqueFields)) {
 				await this.updateManyRaw(() => {
 					return {
 						items: updateItems,
