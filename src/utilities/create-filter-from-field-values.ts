@@ -5,7 +5,7 @@ import { getFieldValue } from "./get-field-value";
 
 export function createFilterFromFieldValues(fields: Set<ColumnField>, items: object[]): Filter {
 	if (fields.size === 1) {
-		return createFilterFromSingleFieldValue(fields.first()!, items);
+		return createFilterFromSingleFieldValue(fields.first<never>(), items);
 	} else {
 		return createFilterFromMultipleFieldValues(fields, items);
 	}
