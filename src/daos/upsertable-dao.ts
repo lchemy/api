@@ -107,7 +107,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 					}, tx);
 				}
 
-				persistedItems.push.apply(persistedItems, ...updateItems);
+				persistedItems.push.apply(persistedItems, updateItems);
 			}
 
 			// insert items
@@ -119,7 +119,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 					};
 				}, tx);
 
-				persistedItems.push.apply(persistedItems, ...insertedItems);
+				persistedItems.push.apply(persistedItems, insertedItems);
 			}
 
 			// return all persisted items

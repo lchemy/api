@@ -6,9 +6,7 @@ export interface ApiRequestQuery {
 	[key: string]: string | string[] | undefined;
 }
 
-export interface ApiRequestHeaders {
-	[key: string]: string | undefined;
-}
+export interface ApiRequestHeaders extends Record<string, string | undefined> {}
 
 export interface ApiRequest<A = any> {
 	params?: ApiRequestParams;
