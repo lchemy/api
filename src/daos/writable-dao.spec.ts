@@ -13,10 +13,12 @@ describe("writable dao", () => {
 
 		dao = container.get(RidesDao);
 
+		// @ts-ignore
 		jest.spyOn(dao, "withTransaction").mockImplementation((executor) => {
 			if (trx == null) {
 				trx = Symbol();
 			}
+			// @ts-ignore
 			return executor(trx);
 		});
 	});

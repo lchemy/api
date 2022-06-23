@@ -13,16 +13,16 @@ gulp.task("build:package", () => {
 		delete pkg.devDependencies;
 		pkg.main = "index.js";
 
-		const dependencies = pkg.dependencies;
-		pkg.dependencies = Object.keys(dependencies).reduce((memo, key) => {
-			if (dependencies[key].startsWith("file:")) {
-				const file = dependencies[key].substr(5);
-				memo[key] = `file:${ path.join("..", file) }`;
-			} else {
-				memo[key] = dependencies[key];
-			}
-			return memo;
-		}, {});
+		// const dependencies = pkg.dependencies;
+		// pkg.dependencies = Object.keys(dependencies).reduce((memo, key) => {
+		// 	if (dependencies[key].startsWith("file:")) {
+		// 		const file = dependencies[key].substr(5);
+		// 		memo[key] = `file:${ path.join("..", file) }`;
+		// 	} else {
+		// 		memo[key] = dependencies[key];
+		// 	}
+		// 	return memo;
+		// }, {});
 
 		return JSON.stringify(pkg, undefined, 2) + "\n";
 	})).pipe(gulp.dest("dist"));
