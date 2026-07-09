@@ -1,7 +1,7 @@
 import { ColumnField, Orm } from "@lchemy/orm";
 import { processAliases } from "@lchemy/orm/utilities";
 import { Set } from "immutable";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { UpsertManyRequestBuilder, UpsertOneRequestBuilder } from "../models";
 import { createFilterFromFieldValues, createRecordsMap, getFieldValue, setFieldValue } from "../utilities";
@@ -36,7 +36,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 		return uniqueFields;
 	});
 
-	async upsertManyRaw(builder: UpsertManyRequestBuilder<object, A>, trx?: Transaction): Promise<object[]> {
+	async upsertManyRaw(builder: UpsertManyRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const uniqueFields = await this.uniqueFields,
 			primaryFields = await this.primaryFields,
 			updateableFields = await this.updatableFields,
@@ -132,7 +132,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 		}, trx);
 	}
 
-	async upsertMany(builder: UpsertManyRequestBuilder<M, A>, trx?: Transaction): Promise<M[]> {
+	async upsertMany(builder: UpsertManyRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.upsertManyRaw(() => {
 			const { items, auth } = builder();
 			return {
@@ -144,7 +144,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 		return this.dbJsonsToModels(rows);
 	}
 
-	async upsertOneRaw(builder: UpsertOneRequestBuilder<object, A>, trx?: Transaction): Promise<object> {
+	async upsertOneRaw(builder: UpsertOneRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object> {
 		const { item, auth } = builder();
 
 		const results = await this.upsertManyRaw(() => {
@@ -157,7 +157,7 @@ export abstract class UpsertableDao<M, O extends Orm, A = any> extends WritableD
 		return results[0];
 	}
 
-	async upsertOne(builder: UpsertOneRequestBuilder<M, A>, trx?: Transaction): Promise<M> {
+	async upsertOne(builder: UpsertOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M> {
 		const row = await this.upsertOneRaw(() => {
 			const { item } = builder();
 			return {

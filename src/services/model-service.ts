@@ -1,5 +1,5 @@
 import { Filter, Orm, SortBy } from "@lchemy/orm";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { ApiField, Dao } from "../daos";
 
@@ -20,7 +20,7 @@ export abstract class ModelService<M extends object, O extends Orm> {
 		return this.dao.parseApiSorts(input, maxDepth);
 	}
 
-	withTransaction<T>(executor: (tx: Transaction) => T | Promise<T>, trx?: Transaction): Promise<T> {
+	withTransaction<T>(executor: (tx: Knex.Transaction) => T | Promise<T>, trx?: Knex.Transaction): Promise<T> {
 		return this.dao.withTransaction(executor, trx);
 	}
 

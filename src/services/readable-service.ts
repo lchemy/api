@@ -1,5 +1,5 @@
 import { Orm } from "@lchemy/orm";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { ReadableDao } from "../daos";
 import { FindAllRequestBuilder, FindAllWithCountRequestBuilder, FindCountRequestBuilder, FindExistsByPrimaryFieldsRequestBuilder, FindOneByPrimaryFieldsRequestBuilder } from "../models";
@@ -11,23 +11,23 @@ export abstract class ReadableService<M extends object, O extends Orm, A = any> 
 		super(dao);
 	}
 
-	find(builder: FindAllRequestBuilder<O, A>, trx?: Transaction): Promise<M[]> {
+	find(builder: FindAllRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<M[]> {
 		return this.dao.findAll(builder, trx);
 	}
 
-	findWithCount(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Transaction): Promise<{ count: number, rows: M[] }> {
+	findWithCount(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<{ count: number, rows: M[] }> {
 		return this.dao.findAllWithCount(builder, trx);
 	}
 
-	findByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Transaction): Promise<M | undefined> {
+	findByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Knex.Transaction): Promise<M | undefined> {
 		return this.dao.findOneByPrimaryFields(builder, trx);
 	}
 
-	findExistsWithFilter(builder: FindCountRequestBuilder<O, A>, trx?: Transaction): Promise<boolean> {
+	findExistsWithFilter(builder: FindCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<boolean> {
 		return this.dao.findExistsWithFilter(builder, trx);
 	}
 
-	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
+	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<boolean> {
 		return this.dao.findExistsByPrimaryFields(builder, trx);
 	}
 }

@@ -2,7 +2,7 @@ import { parseApiFilter } from "@lchemy/api-filter-parser";
 import { AggregateField, ColumnField, DerivedField, Field, Filter, Orm, OrmRef, SortBy, SortDirection } from "@lchemy/orm";
 import Boom from "boom";
 import { Map, Set } from "immutable";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { MAX_API_ORM_DEPTH } from "../constants";
 
@@ -17,7 +17,7 @@ export abstract class Dao<M, O extends Orm> {
 
 	private apiFieldCache = Map<string, ApiField>();
 
-	async withTransaction<T>(executor: (tx: Transaction) => T | Promise<T>, trx?: Transaction): Promise<T> {
+	async withTransaction<T>(executor: (tx: Knex.Transaction) => T | Promise<T>, trx?: Knex.Transaction): Promise<T> {
 		if (trx != null) {
 			return executor(trx);
 		}

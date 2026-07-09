@@ -3,6 +3,8 @@ import * as ormLib from "@lchemy/orm";
 
 import { DriversDao } from "../tests/mocks/car-service/daos";
 
+jest.mock("@lchemy/orm/requests");
+
 describe("readable dao", () => {
 	let dao: DriversDao;
 

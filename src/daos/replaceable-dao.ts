@@ -1,5 +1,5 @@
 import { Orm } from "@lchemy/orm";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { ReplaceRequestBuilder } from "../models";
 import { createRecordsMap, getFieldValue, setFieldValue } from "../utilities";
@@ -7,7 +7,7 @@ import { createRecordsMap, getFieldValue, setFieldValue } from "../utilities";
 import { UpsertableDao } from "./upsertable-dao";
 
 export abstract class ReplaceableDao<M, O extends Orm, A = any> extends UpsertableDao<M, O, A> {
-	async replaceManyRaw(builder: ReplaceRequestBuilder<O, object, A>, trx?: Transaction): Promise<object[]> {
+	async replaceManyRaw(builder: ReplaceRequestBuilder<O, object, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const uniqueFields = await this.uniqueFields,
 			primaryFields = await this.primaryFields,
 			updateableFields = await this.updatableFields,
@@ -114,7 +114,7 @@ export abstract class ReplaceableDao<M, O extends Orm, A = any> extends Upsertab
 		}, trx);
 	}
 
-	async replaceMany(builder: ReplaceRequestBuilder<O, M, A>, trx?: Transaction): Promise<M[]> {
+	async replaceMany(builder: ReplaceRequestBuilder<O, M, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.replaceManyRaw((orm) => {
 			const { items, filter, auth } = builder(orm);
 			return {

@@ -1,5 +1,5 @@
 import { Orm, findAll, findAllWithCount, findCount, findOne } from "@lchemy/orm";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import {
 	FindAllByPrimaryFieldsRequestBuilder,
@@ -15,20 +15,20 @@ import { createFilterFromFieldValues } from "../utilities";
 import { Dao } from "./dao";
 
 export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
-	findAllRaw(builder: FindAllRequestBuilder<O, A>, trx?: Transaction): Promise<object[]> {
+	findAllRaw(builder: FindAllRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<object[]> {
 		return findAll(this.ormRef, builder, trx);
 	}
 
-	async findAll(builder: FindAllRequestBuilder<O, A>, trx?: Transaction): Promise<M[]> {
+	async findAll(builder: FindAllRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.findAllRaw(builder, trx);
 		return this.dbJsonsToModels(rows);
 	}
 
-	findAllWithCountRaw(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Transaction): Promise<{ count: number, rows: object[] }> {
+	findAllWithCountRaw(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<{ count: number, rows: object[] }> {
 		return findAllWithCount(this.ormRef, builder, trx);
 	}
 
-	async findAllWithCount(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Transaction): Promise<{ count: number, rows: M[] }> {
+	async findAllWithCount(builder: FindAllWithCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<{ count: number, rows: M[] }> {
 		const { count, rows } = await this.findAllWithCountRaw(builder, trx);
 		return {
 			count,
@@ -36,20 +36,20 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		};
 	}
 
-	findOneRaw(builder: FindOneRequestBuilder<O, A>, trx?: Transaction): Promise<object | undefined> {
+	findOneRaw(builder: FindOneRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<object | undefined> {
 		return findOne(this.ormRef, builder, trx);
 	}
 
-	async findOne(builder: FindOneRequestBuilder<O, A>, trx?: Transaction): Promise<M | undefined> {
+	async findOne(builder: FindOneRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<M | undefined> {
 		const row = await this.findOneRaw(builder, trx);
 		return row != null ? this.dbJsonToModel(row) : undefined;
 	}
 
-	findCount(builder: FindCountRequestBuilder<O, A>, trx?: Transaction): Promise<number> {
+	findCount(builder: FindCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<number> {
 		return findCount(this.ormRef, builder, trx);
 	}
 
-	async findAllRawByPrimaryFields(builder: FindAllByPrimaryFieldsRequestBuilder<O, object, A>, trx?: Transaction): Promise<object[]> {
+	async findAllRawByPrimaryFields(builder: FindAllByPrimaryFieldsRequestBuilder<O, object, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const primaryFields = await this.primaryFields;
 
 		return findAll(this.ormRef, (orm) => {
@@ -60,7 +60,7 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		}, trx);
 	}
 
-	async findAllByPrimaryFields(builder: FindAllByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Transaction): Promise<M[]> {
+	async findAllByPrimaryFields(builder: FindAllByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.findAllRawByPrimaryFields((orm) => {
 			const { items, fields, auth } = builder(orm);
 			return {
@@ -72,7 +72,7 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		return this.dbJsonsToModels(rows);
 	}
 
-	async findOneRawByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, object, A>, trx?: Transaction): Promise<object | undefined> {
+	async findOneRawByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, object, A>, trx?: Knex.Transaction): Promise<object | undefined> {
 		const primaryFields = await this.primaryFields;
 
 		return findOne(this.ormRef, (orm) => {
@@ -83,7 +83,7 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		}, trx);
 	}
 
-	async findOneByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Transaction): Promise<M | undefined> {
+	async findOneByPrimaryFields(builder: FindOneByPrimaryFieldsRequestBuilder<O, M, A>, trx?: Knex.Transaction): Promise<M | undefined> {
 		const row = await this.findOneRawByPrimaryFields((orm) => {
 			const { fields, filter, item, auth } = builder(orm);
 			return {
@@ -96,12 +96,12 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		return row != null ? this.dbJsonToModel(row) : undefined;
 	}
 
-	async findExistsWithFilter(builder: FindCountRequestBuilder<O, A>, trx?: Transaction): Promise<boolean> {
+	async findExistsWithFilter(builder: FindCountRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<boolean> {
 		const count = await this.findCount(builder, trx);
 		return count !== 0;
 	}
 
-	async findExistsRawByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<object, A>, trx?: Transaction): Promise<boolean> {
+	async findExistsRawByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<boolean> {
 		const primaryFields = await this.primaryFields;
 
 		const count = await findCount(this.ormRef, () => {
@@ -113,7 +113,7 @@ export abstract class ReadableDao<M, O extends Orm, A = any> extends Dao<M, O> {
 		return count !== 0;
 	}
 
-	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
+	findExistsByPrimaryFields(builder: FindExistsByPrimaryFieldsRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<boolean> {
 		return this.findExistsRawByPrimaryFields(() => {
 			const { item, auth } = builder();
 			return {

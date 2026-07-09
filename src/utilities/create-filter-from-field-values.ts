@@ -15,7 +15,7 @@ function createFilterFromSingleFieldValue(field: ColumnField, items: object[]): 
 	const values = items.map((item) => {
 		const value = getFieldValue(field, item);
 		if (value == null) {
-			throw new Error(`Expected field ${ field } to be defined on item ${ item }`);
+			throw new Error(`Expected field ${ field } to be defined on item ${ JSON.stringify(item) }`);
 		}
 		return value;
 	});

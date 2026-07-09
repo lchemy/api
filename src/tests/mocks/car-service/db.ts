@@ -1,6 +1,6 @@
-import Knex from "knex";
+import { knex } from "knex";
 
-export const db = Knex({
+export const db = knex({
 	client: "sqlite3",
 	connection: {
 		filename: ":memory:",

@@ -3,7 +3,7 @@ import {
 	removeWithFilter, updateMany, updateOne, updateWithFilter
 } from "@lchemy/orm";
 import { Set } from "immutable";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import {
 	InsertManyRequestBuilder,
@@ -27,7 +27,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		return Set(this.getUpdatableFields(orm));
 	});
 
-	async insertManyRaw(builder: InsertManyRequestBuilder<object, A>, trx?: Transaction): Promise<object[]> {
+	async insertManyRaw(builder: InsertManyRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const fields = (await this.insertableFields).toArray();
 		if (fields.length === 0) {
 			throw new Error(`Cannot insert row with no fields specified`);
@@ -47,7 +47,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	async insertMany(builder: InsertManyRequestBuilder<M, A>, trx?: Transaction): Promise<M[]> {
+	async insertMany(builder: InsertManyRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.insertManyRaw(() => {
 			const { items } = builder();
 			return {
@@ -58,7 +58,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		return this.dbJsonsToModels(rows);
 	}
 
-	async insertOneRaw(builder: InsertOneRequestBuilder<object, A>, trx?: Transaction): Promise<object> {
+	async insertOneRaw(builder: InsertOneRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object> {
 		const fields = (await this.insertableFields).toArray();
 		if (fields.length === 0) {
 			throw new Error(`Cannot insert row with no fields specified`);
@@ -82,7 +82,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	async insertOne(builder: InsertOneRequestBuilder<M, A>, trx?: Transaction): Promise<M> {
+	async insertOne(builder: InsertOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M> {
 		const row = await this.insertOneRaw(() => {
 			const { item } = builder();
 			return {
@@ -93,7 +93,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		return this.dbJsonToModel(row);
 	}
 
-	async updateManyRaw(builder: UpdateManyRequestBuilder<object, A>, trx?: Transaction): Promise<object[]> {
+	async updateManyRaw(builder: UpdateManyRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const fields = (await this.updatableFields).toArray(),
 			{ items, auth } = builder();
 
@@ -110,7 +110,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	async updateMany(builder: UpdateManyRequestBuilder<M, A>, trx?: Transaction): Promise<M[]> {
+	async updateMany(builder: UpdateManyRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.updateManyRaw(() => {
 			const { items, auth } = builder();
 			return {
@@ -122,7 +122,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		return this.dbJsonsToModels(rows);
 	}
 
-	async updateOneRaw(builder: UpdateOneRequestBuilder<object, A>, trx?: Transaction): Promise<object> {
+	async updateOneRaw(builder: UpdateOneRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<object> {
 		const fields = (await this.updatableFields).toArray(),
 			{ item, auth } = builder();
 
@@ -145,7 +145,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	async updateOne(builder: UpdateOneRequestBuilder<M, A>, trx?: Transaction): Promise<M> {
+	async updateOne(builder: UpdateOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M> {
 		const row = await this.updateOneRaw(() => {
 			const { item, auth } = builder();
 			return {
@@ -157,7 +157,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		return this.dbJsonToModel(row);
 	}
 
-	async updateWithFilterRaw(builder: UpdateWithFilterRequestBuilder<O, A>, trx?: Transaction): Promise<object[]> {
+	async updateWithFilterRaw(builder: UpdateWithFilterRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<object[]> {
 		const request = await this.evaluateOrmBuilder(builder);
 
 		return this.withTransaction(async (tx) => {
@@ -171,16 +171,16 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	async updateWithFilter(builder: UpdateWithFilterRequestBuilder<O, A>, trx?: Transaction): Promise<M[]> {
+	async updateWithFilter(builder: UpdateWithFilterRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<M[]> {
 		const rows = await this.updateWithFilterRaw(builder, trx);
 		return this.dbJsonsToModels(rows);
 	}
 
-	removeManyRaw(builder: RemoveManyRequestBuilder<object, A>, trx?: Transaction): Promise<number> {
+	removeManyRaw(builder: RemoveManyRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<number> {
 		return removeMany(this.ormRef, builder, trx);
 	}
 
-	removeMany(builder: RemoveManyRequestBuilder<M, A>, trx?: Transaction): Promise<number> {
+	removeMany(builder: RemoveManyRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<number> {
 		return this.removeManyRaw(() => {
 			const { items, auth } = builder();
 			return {
@@ -190,11 +190,11 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	removeOneRaw(builder: RemoveOneRequestBuilder<object, A>, trx?: Transaction): Promise<boolean> {
+	removeOneRaw(builder: RemoveOneRequestBuilder<object, A>, trx?: Knex.Transaction): Promise<boolean> {
 		return removeOne(this.ormRef, builder, trx);
 	}
 
-	removeOne(builder: RemoveOneRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
+	removeOne(builder: RemoveOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<boolean> {
 		return this.removeOneRaw(() => {
 			const { item, auth } = builder();
 			return {
@@ -204,7 +204,7 @@ export abstract class WritableDao<M, O extends Orm, A = any> extends ReadableDao
 		}, trx);
 	}
 
-	removeWithFilter(builder: RemoveWithFilterRequestBuilder<O, A>, trx?: Transaction): Promise<number> {
+	removeWithFilter(builder: RemoveWithFilterRequestBuilder<O, A>, trx?: Knex.Transaction): Promise<number> {
 		return removeWithFilter(this.ormRef, builder, trx);
 	}
 
