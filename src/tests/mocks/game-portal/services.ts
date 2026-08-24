@@ -1,5 +1,5 @@
 import { provide } from "@lchemy/di";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { ReadableService, WritableService } from "../../../index";
 
@@ -52,7 +52,7 @@ export class GamesService extends WritableService<Game, GamesOrm, AuthUser> {
 		super(dao);
 	}
 
-	protected async afterInsert(insertedGame: Game, targetGame: Game, _1?: AuthUser, trx?: Transaction): Promise<Game> {
+	protected async afterInsert(insertedGame: Game, targetGame: Game, _1?: AuthUser, trx?: Knex.Transaction): Promise<Game> {
 		const gameAuthors = targetGame.authors.map((author) => {
 			return { game: insertedGame, author };
 		});
@@ -70,7 +70,7 @@ export class GamesService extends WritableService<Game, GamesOrm, AuthUser> {
 		}, trx) as Promise<Game>;
 	}
 
-	protected async afterUpdate(updatedGame: Game, targetGame: Game, auth?: AuthUser, trx?: Transaction): Promise<Game> {
+	protected async afterUpdate(updatedGame: Game, targetGame: Game, auth?: AuthUser, trx?: Knex.Transaction): Promise<Game> {
 		const newGameAuthors = targetGame.authors.map((author) => {
 			return { game: updatedGame, author };
 		});
@@ -90,7 +90,7 @@ export class GamesService extends WritableService<Game, GamesOrm, AuthUser> {
 		}, trx) as Promise<Game>;
 	}
 
-	protected async beforeRemove(game: Game, _0?: AuthUser, trx?: Transaction): Promise<void> {
+	protected async beforeRemove(game: Game, _0?: AuthUser, trx?: Knex.Transaction): Promise<void> {
 		await this.gameAuthorsDao.removeWithFilter((orm) => {
 			return {
 				filter: orm.gameId.$eq(game.id),
@@ -112,7 +112,7 @@ export class UsersService extends WritableService<User, UsersOrm, AuthUser> {
 		super(dao);
 	}
 
-	protected async afterInsert(insertedUser: User, targetUser: User, _0?: AuthUser, trx?: Transaction): Promise<User> {
+	protected async afterInsert(insertedUser: User, targetUser: User, _0?: AuthUser, trx?: Knex.Transaction): Promise<User> {
 		await this.upsertInfo(insertedUser.id, targetUser.info, trx);
 
 		return this.dao.findOneByPrimaryFields(() => {
@@ -122,7 +122,7 @@ export class UsersService extends WritableService<User, UsersOrm, AuthUser> {
 		}, trx) as Promise<User>;
 	}
 
-	protected async afterUpdate(updatedUser: User, targetUser: User, _0?: AuthUser, trx?: Transaction): Promise<User> {
+	protected async afterUpdate(updatedUser: User, targetUser: User, _0?: AuthUser, trx?: Knex.Transaction): Promise<User> {
 		await this.upsertInfo(updatedUser.id, targetUser.info, trx);
 
 		return this.dao.findOneByPrimaryFields(() => {
@@ -132,7 +132,7 @@ export class UsersService extends WritableService<User, UsersOrm, AuthUser> {
 		}, trx) as Promise<User>;
 	}
 
-	protected async beforeRemove(user: User, _0?: AuthUser, trx?: Transaction): Promise<void> {
+	protected async beforeRemove(user: User, _0?: AuthUser, trx?: Knex.Transaction): Promise<void> {
 		await this.userInfosDao.removeOne(() => {
 			return {
 				item: {
@@ -142,7 +142,7 @@ export class UsersService extends WritableService<User, UsersOrm, AuthUser> {
 		}, trx);
 	}
 
-	private async upsertInfo(id: number, info: UserInfo, trx?: Transaction): Promise<void> {
+	private async upsertInfo(id: number, info: UserInfo, trx?: Knex.Transaction): Promise<void> {
 		await this.userInfosDao.upsertOne(() => {
 			return {
 				item: {
@@ -163,13 +163,13 @@ export class ReviewsService extends WritableService<Review, ReviewsOrm, AuthUser
 		super(dao);
 	}
 
-	protected onInsert(item: Review, auth?: AuthUser, trx?: Transaction): Promise<Review> {
+	protected onInsert(item: Review, auth?: AuthUser, trx?: Knex.Transaction): Promise<Review> {
 		return this.dao.upsertOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected onUpdate(item: Review, auth?: AuthUser, trx?: Transaction): Promise<Review> {
+	protected onUpdate(item: Review, auth?: AuthUser, trx?: Knex.Transaction): Promise<Review> {
 		return this.dao.upsertOne(() => {
 			return { item, auth };
 		}, trx);

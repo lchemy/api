@@ -1,7 +1,7 @@
 import { ValidationResult, Validator } from "@lchemy/model/validation";
 import { Orm } from "@lchemy/orm";
 import Boom from "boom";
-import { Transaction } from "knex";
+import { Knex } from "knex";
 
 import { WritableDao } from "../daos";
 import { InsertOneRequestBuilder, RemoveOneRequestBuilder, UpdateOneRequestBuilder } from "../models";
@@ -10,7 +10,7 @@ import { validationResultToBoom } from "../utilities";
 import { ReadableService } from "./readable-service";
 
 export type ValidationFunctionResult<M> = ValidationResult<M> | undefined;
-export type ValidationFunction<M, A> = (model: M, auth?: A | undefined, trx?: Transaction) => ValidationFunctionResult<M> | Promise<ValidationFunctionResult<M>>;
+export type ValidationFunction<M, A> = (model: M, auth?: A | undefined, trx?: Knex.Transaction) => ValidationFunctionResult<M> | Promise<ValidationFunctionResult<M>>;
 
 export abstract class WritableService<M extends object, O extends Orm, A = any> extends ReadableService<M, O, A> {
 	protected validator?: Validator<M>;
@@ -25,7 +25,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		super(dao);
 	}
 
-	async insert(builder: InsertOneRequestBuilder<M, A>, trx?: Transaction): Promise<M> {
+	async insert(builder: InsertOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M> {
 		const { item, auth } = builder();
 
 		return this.withTransaction(async (tx) => {
@@ -39,7 +39,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		}, trx);
 	}
 
-	async update(builder: UpdateOneRequestBuilder<M, A>, trx?: Transaction): Promise<M> {
+	async update(builder: UpdateOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<M> {
 		const { item, auth } = builder();
 
 		return this.withTransaction(async (tx) => {
@@ -53,7 +53,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		}, trx);
 	}
 
-	async remove(builder: RemoveOneRequestBuilder<M, A>, trx?: Transaction): Promise<boolean> {
+	async remove(builder: RemoveOneRequestBuilder<M, A>, trx?: Knex.Transaction): Promise<boolean> {
 		const { item, auth } = builder();
 
 		return this.withTransaction(async (tx) => {
@@ -87,7 +87,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		return validator.validate(model);
 	}
 
-	protected async assertValidInsert(item: M, auth?: A, trx?: Transaction): Promise<void> {
+	protected async assertValidInsert(item: M, auth?: A, trx?: Knex.Transaction): Promise<void> {
 		// check that it passes all validations
 		await this.assertValidations([
 			this.validateInsertModel,
@@ -95,7 +95,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		], item, auth, trx);
 	}
 
-	protected async assertValidUpdate(item: M, auth?: A, trx?: Transaction): Promise<void> {
+	protected async assertValidUpdate(item: M, auth?: A, trx?: Knex.Transaction): Promise<void> {
 		// check that it exists
 		await this.assertExists(item, auth, trx);
 
@@ -106,7 +106,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		], item, auth, trx);
 	}
 
-	protected async assertValidRemove(item: M, auth?: A, trx?: Transaction): Promise<void> {
+	protected async assertValidRemove(item: M, auth?: A, trx?: Knex.Transaction): Promise<void> {
 		// check that it exists
 		await this.assertExists(item, auth, trx);
 
@@ -114,7 +114,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		await this.assertValidations(this.removeValidations, item, auth, trx);
 	}
 
-	protected async assertExists(item: M, auth?: A, trx?: Transaction): Promise<void> {
+	protected async assertExists(item: M, auth?: A, trx?: Knex.Transaction): Promise<void> {
 		const exists = await this.dao.findExistsByPrimaryFields(() => {
 			return { item, auth };
 		}, trx);
@@ -126,7 +126,7 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		throw Boom.notFound();
 	}
 
-	protected async assertValidations(fns: Array<ValidationFunction<M, A>>, model: M, auth?: A, trx?: Transaction): Promise<void> {
+	protected async assertValidations(fns: Array<ValidationFunction<M, A>>, model: M, auth?: A, trx?: Knex.Transaction): Promise<void> {
 		let result = ValidationResult.VALID_RESULT;
 
 		try {
@@ -151,45 +151,45 @@ export abstract class WritableService<M extends object, O extends Orm, A = any> 
 		}
 	}
 
-	protected async beforeInsert(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
+	protected async beforeInsert(_item: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected onInsert(item: M, auth: A | undefined, trx: Transaction): Promise<M> {
+	protected onInsert(item: M, auth: A | undefined, trx: Knex.Transaction): Promise<M> {
 		return this.dao.insertOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterInsert(_insertedItem: M, _targetItem: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
+	protected async afterInsert(_insertedItem: M, _targetItem: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected async beforeUpdate(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
+	protected async beforeUpdate(_item: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected onUpdate(item: M, auth: A | undefined, trx: Transaction): Promise<M> {
+	protected onUpdate(item: M, auth: A | undefined, trx: Knex.Transaction): Promise<M> {
 		return this.dao.updateOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterUpdate(_updatedItem: M, _targetItem: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
+	protected async afterUpdate(_updatedItem: M, _targetItem: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected async beforeRemove(_item: M, _auth: A | undefined, _trx: Transaction): Promise<M | undefined | void> {
+	protected async beforeRemove(_item: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<M | undefined | void> {
 		return;
 	}
 
-	protected onRemove(item: M, auth: A | undefined, trx: Transaction): Promise<boolean> {
+	protected onRemove(item: M, auth: A | undefined, trx: Knex.Transaction): Promise<boolean> {
 		return this.dao.removeOne(() => {
 			return { item, auth };
 		}, trx);
 	}
 
-	protected async afterRemove(_success: boolean, _removedItem: M, _auth: A | undefined, _trx: Transaction): Promise<boolean | undefined | void> {
+	protected async afterRemove(_success: boolean, _removedItem: M, _auth: A | undefined, _trx: Knex.Transaction): Promise<boolean | undefined | void> {
 		return;
 	}
 }

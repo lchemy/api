@@ -107,7 +107,7 @@ export interface UserInfosOrm extends RelationalOrm {
 }
 export const $userInfosOrm: OrmRef<UserInfosOrm> = buildOrm($userInfosSchema).defineRelation("userInfo", ({ column, schema }) => {
 	return {
-		userId: column(schema.userId).exclude(),
+		userId: column(schema.userId),
 		age: column(schema.age)
 	};
 });

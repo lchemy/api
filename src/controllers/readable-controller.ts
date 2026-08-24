@@ -161,7 +161,7 @@ export abstract class ReadableController<M extends object, O extends Orm, A = an
 			return fields;
 		} catch (err) {
 			const boom = Boom.badRequest("Invalid fields query parameter");
-			if (err.message != null) {
+			if (err && typeof err === "object" && "message" in err && err.message != null) {
 				(boom.output.payload as any).reason = err.message;
 			}
 			throw boom;
